@@ -8,3 +8,26 @@
         );
         return json_encode($keyboard);
     }
+
+    function clientMessageParser($user_msg){
+        if($user_msg == 'Weather in Moscow') return "MOSCOW_WEATHER";
+        if($user_msg == 'Weather in London') return "LONDON_WEATHER";
+        if($user_msg == 'Weather in New York') return "NEWYORK_WEATHER";
+        if($user_msg == 'Weather in Tokyo') return "TOKYO_WEATHER";
+
+        if(mb_stripos($user_msg, 'weather') !== false
+            || mb_stripos($user_msg, 'погода') !== false) return "WEATHER_SWITCHER";
+
+        if(mb_stripos($user_msg, 'доллар') !== false ||
+            mb_stripos($user_msg, 'dollar') !== false ||
+            mb_stripos($user_msg, '💵') !== false) return "USD_EXCHANGE_RATE";
+
+        if(mb_stripos($user_msg, 'евро') !== false ||
+            mb_stripos($user_msg, 'euro') !== false ||
+            mb_stripos($user_msg, '💶') !== false) return "EUR_EXCHANGE_RATE";
+
+        if(mb_stripos($user_msg, 'help') !== false ||
+            mb_stripos($user_msg, 'start') !== false) return "HELP";
+
+        return "PARSER_ERROR";
+    }
