@@ -1,9 +1,19 @@
 <?php
 
+    error_reporting(E_ALL);
+
     require_once "lib/telegramMethodsAPI.php";
     require_once "lib/exchangeRatesLib.php";
     require_once "lib/weatherLib.php";
     require_once "lib/auxiliaryModule.php";
+
+    define('TELEGRAM_API_BOT_TOKEN', '**********************************************'); // Confidential information
+
+    if(TELEGRAM_API_BOT_TOKEN == '**********************************************'){
+        echo "System failure, no token specified for telegram API!";
+        trigger_error("System failure, no token specified for telegram API!", E_USER_ERROR);
+        exit("System failure, no token specified for telegram API!");
+    }
 
     $telegram_server_input_request = file_get_contents('php://input');
     $client_data = json_decode($telegram_server_input_request, true);
@@ -13,7 +23,7 @@
         exit();
     }
 
-    $BotInterface = new TelegramBotNetInterfaceAPI('**********************************************');
+    $BotInterface = new TelegramBotNetInterfaceAPI(TELEGRAM_API_BOT_TOKEN);
 
     $weatherKeyboard = KeyBoards::getKeyBoard([[["text" => "Weather in Moscow"], ["text" => "Weather in London"],
     ["text" => "Weather in New York"], ["text" => "Weather in Tokyo"]]]);
@@ -170,6 +180,19 @@
                         'text' => $HELP_style_header . PHP_EOL . $HELP_dollar . PHP_EOL . $HELP_euro . PHP_EOL .
                             $HELP_weather . PHP_EOL . $HELP_bot_author_ref . PHP_EOL . $HELP_style_footer,
                         'parse_mode' => 'Markdown',
+                    )
+                );
+                exit();
+                break;
+
+            case "START":
+                $user_name = $client_data['message']['from']['first_name'];
+                $BotInterface->sendTelegram(
+                    'sendAnimation',
+                    array(
+                        'chat_id' => $client_data['message']['chat']['id'],
+                        'animation' => curl_file_create(__DIR__ . '/img/start.gif'),
+                        'caption' => "Hey! Nice to meet you, $user_name 😄. First look here /help 🏁",
                     )
                 );
                 exit();
