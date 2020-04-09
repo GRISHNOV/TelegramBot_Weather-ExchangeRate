@@ -1,5 +1,7 @@
 <?php
 
+    /*  This script should be installed as a webhook handler for telegram servers   */
+
     error_reporting(E_ALL);
 
     require_once "lib/telegramMethodsAPI.php";
@@ -7,7 +9,12 @@
     require_once "lib/weatherLib.php";
     require_once "lib/auxiliaryModule.php";
 
-    define('TELEGRAM_API_BOT_TOKEN', '**********************************************'); // Confidential information
+    /*  The constants shown below are confidential information  */
+    define('TELEGRAM_API_BOT_TOKEN', '**********************************************');
+    define('MYSQL_DB_HOST', '**********');
+    define('MYSQL_DB_USER', '**********');
+    define('MYSQL_DB_PASSWORD', '**********');
+    define('MYSQL_MSG_LOGS_DB_NAME', '**********');
 
     if(TELEGRAM_API_BOT_TOKEN == '**********************************************'){
         echo "System failure, no token specified for telegram API!";
@@ -29,6 +36,43 @@
     ["text" => "Weather in New York"], ["text" => "Weather in Tokyo"]]]);
 
     if (!empty($client_data['message']['text'])) {
+
+        $MySqlObj = new mysqli(MYSQL_DB_HOST, MYSQL_DB_USER,
+            MYSQL_DB_PASSWORD, MYSQL_MSG_LOGS_DB_NAME);
+        if ($MySqlObj->connect_errno) {
+            echo "Failed to connect to the database with msg logs: " . $MySqlObj->connect_error;
+            trigger_error("Failed to connect to the database with msg logs: " .
+                $MySqlObj->connect_error, E_USER_ERROR);
+            exit("Failed to connect to the database with msg logs: " . $MySqlObj->connect_error);
+        }
+
+        $client_msg_date = $client_data['message']["date"];
+        $client_first_name = $client_data['message']["from"]["first_name"];
+        $client_last_name = $client_data['message']["from"]["last_name"];
+        $client_username = $client_data['message']["from"]["username"];
+        $client_msg = $client_data['message']["text"];
+
+        $db_query = "INSERT INTO msg_logs (
+                                    telegram_date,
+                                    telegram_from_first_name,
+                                    telegram_from_last_name,
+                                    telegram_from_username,
+                                    telegram_text)
+                                    VALUES (
+                                    '$client_msg_date' ,
+                                    '$client_first_name' ,
+                                    '$client_last_name' ,
+                                    '$client_username' ,
+                                    '$client_msg')";
+
+        $MySqlObj->query("SET NAMES utf8mb4");
+        if ($MySqlObj->query($db_query) === FALSE ) {
+            echo "Failed to insert data into a table: " . $MySqlObj->connect_error;
+            trigger_error("Failed to insert data into a table: " .
+                $MySqlObj->connect_error, E_USER_ERROR);
+            exit("Failed to insert data into a table: " . $MySqlObj->connect_error);
+        }
+        $MySqlObj->close();
 
         $switcher_flag = ParserProcessor::clientMessageParser($client_data['message']['text']);
 
@@ -198,7 +242,7 @@
                 exit();
                 break;
 
-            default:
+            case "PARSER_ERROR":
                 $BotInterface->sendTelegram(
                     'sendAnimation',
                     array(
@@ -208,6 +252,8 @@
                     )
                 );
                 exit();
+                break;
 
         }
+
     }
