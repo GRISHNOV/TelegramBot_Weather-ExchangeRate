@@ -80,6 +80,17 @@
 
             case "USD_EXCHANGE_RATE":
                 $USD_data = ExchangeRates::getExchangeRates("USD");
+                if ($USD_data == "API_REQUEST_FAILURE"){
+                    $BotInterface->sendTelegram(
+                        'sendMessage',
+                        array(
+                            'chat_id' => $client_data['message']['chat']['id'],
+                            'text' => "Sorry, something is wrong with the currency exchange service.⚙️ " . PHP_EOL .
+                                "Please try again later..."
+                        )
+                    );
+                    exit('System failure: It is not possible to connect to the exchange rate API');
+                }
                 $USD_style_header = "Ok, here is the result of your request❤️" . PHP_EOL;
                 $USD_current_value = "One dollar 💵 is equal to " . $USD_data['CurrentValue'] . " rubles";
                 $USD_previous_value = "Previous dollar 💵 value: ". $USD_data['PreviousValue'] . " rubles";
@@ -97,6 +108,17 @@
 
             case "EUR_EXCHANGE_RATE":
                 $EUR_data = ExchangeRates::getExchangeRates("EUR");
+                if ($EUR_data == "API_REQUEST_FAILURE"){
+                    $BotInterface->sendTelegram(
+                        'sendMessage',
+                        array(
+                            'chat_id' => $client_data['message']['chat']['id'],
+                            'text' => "Sorry, something is wrong with the currency exchange service.⚙️ " . PHP_EOL .
+                                "Please try again later..."
+                        )
+                    );
+                    exit('System failure: It is not possible to connect to the exchange rate API');
+                }
                 $EUR_style_header = "Ok, here is the result of your request❤️" . PHP_EOL;
                 $EUR_current_value = "One euro 💶 is equal to " . $EUR_data['CurrentValue'] . " rubles";
                 $EUR_previous_value = "Previous euro 💶 value: ". $EUR_data['PreviousValue'] . " rubles";
@@ -253,7 +275,5 @@
                 );
                 exit();
                 break;
-
         }
-
     }
