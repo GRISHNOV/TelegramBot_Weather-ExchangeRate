@@ -47,10 +47,11 @@
         }
 
         $client_msg_date = $client_data['message']["date"];
-        $client_first_name = $client_data['message']["from"]["first_name"];
-        $client_last_name = $client_data['message']["from"]["last_name"];
-        $client_username = $client_data['message']["from"]["username"];
-        $client_msg = $client_data['message']["text"];
+        $client_first_name = $MySqlObj->real_escape_string($client_data['message']["from"]["first_name"]);
+        $client_last_name = $MySqlObj->real_escape_string($client_data['message']["from"]["last_name"]);
+        $client_username = $MySqlObj->real_escape_string($client_data['message']["from"]["username"]);
+        $client_msg = $MySqlObj->real_escape_string($client_data['message']["text"]);
+
 
         $db_query = "INSERT INTO msg_logs (
                                     telegram_date,
@@ -148,6 +149,17 @@
 
             case "MOSCOW_WEATHER":
                 $weather_data = Weather::getWeather("Moscow");
+                if ($weather_data == "API_REQUEST_FAILURE"){
+                    $BotInterface->sendTelegram(
+                        'sendMessage',
+                        array(
+                            'chat_id' => $client_data['message']['chat']['id'],
+                            'text' => "Sorry, something is wrong with the weather service.⚙️ " . PHP_EOL .
+                                "Please try again later..."
+                        )
+                    );
+                    exit('System failure: It is not possible to connect to the OpenWeather API');
+                }
                 $weather_style_header = "Ok, here is the result of your request❤️" . PHP_EOL;
                 $weather_description = "Moscow weather: " . $weather_data['MainDescription'];
                 $weather_wind = "Wind speed: ". $weather_data['WindSpeed'] . " m/s";
@@ -169,6 +181,17 @@
 
             case "LONDON_WEATHER":
                 $weather_data = Weather::getWeather("London");
+                if ($weather_data == "API_REQUEST_FAILURE"){
+                    $BotInterface->sendTelegram(
+                        'sendMessage',
+                        array(
+                            'chat_id' => $client_data['message']['chat']['id'],
+                            'text' => "Sorry, something is wrong with the weather service.⚙️ " . PHP_EOL .
+                                "Please try again later..."
+                        )
+                    );
+                    exit('System failure: It is not possible to connect to the OpenWeather API');
+                }
                 $weather_style_header = "Ok, here is the result of your request❤️" . PHP_EOL;
                 $weather_description = "London weather: " . $weather_data['MainDescription'];
                 $weather_wind = "Wind speed: ". $weather_data['WindSpeed'] . " m/s";
@@ -190,6 +213,17 @@
 
             case "NEWYORK_WEATHER":
                 $weather_data = Weather::getWeather("New York");
+                if ($weather_data == "API_REQUEST_FAILURE"){
+                    $BotInterface->sendTelegram(
+                        'sendMessage',
+                        array(
+                            'chat_id' => $client_data['message']['chat']['id'],
+                            'text' => "Sorry, something is wrong with the weather service.⚙️ " . PHP_EOL .
+                                "Please try again later..."
+                        )
+                    );
+                    exit('System failure: It is not possible to connect to the OpenWeather API');
+                }
                 $weather_style_header = "Ok, here is the result of your request❤️" . PHP_EOL;
                 $weather_description = "New York weather: " . $weather_data['MainDescription'];
                 $weather_wind = "Wind speed: ". $weather_data['WindSpeed'] . " m/s";
@@ -211,6 +245,17 @@
 
             case "TOKYO_WEATHER":
                 $weather_data = Weather::getWeather("Tokyo");
+                if ($weather_data == "API_REQUEST_FAILURE"){
+                    $BotInterface->sendTelegram(
+                        'sendMessage',
+                        array(
+                            'chat_id' => $client_data['message']['chat']['id'],
+                            'text' => "Sorry, something is wrong with the weather service.⚙️ " . PHP_EOL .
+                                "Please try again later..."
+                        )
+                    );
+                    exit('System failure: It is not possible to connect to the OpenWeather API');
+                }
                 $weather_style_header = "Ok, here is the result of your request❤️" . PHP_EOL;
                 $weather_description = "Tokyo weather: " . $weather_data['MainDescription'];
                 $weather_wind = "Wind speed: ". $weather_data['WindSpeed'] . " m/s";
