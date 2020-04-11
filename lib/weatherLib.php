@@ -11,7 +11,15 @@
             }
             $request_url = "http://api.openweathermap.org/data/2.5/weather?q=" . $city . "&appid=" .
                 OPENWEATHER_API_TOKEN . "&units=metric";
-            $weather_request = file_get_contents($request_url);
+            try {
+                $weather_request = file_get_contents($request_url);
+                if ($weather_request == false){
+                    throw new Exception('It is not possible to connect to the OpenWeather API');
+                }
+            } catch (Exception $e) {
+                echo "System failure: " . $e->getMessage();
+                return "API_REQUEST_FAILURE";
+            }
             $weather_value = json_decode($weather_request, true);
             return array(
                 "MainDescription" => $weather_value['weather']['0']['description'],
