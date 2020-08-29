@@ -1,6 +1,10 @@
 <?php
 
-class TelegramBotNetInterfaceAPI
+namespace lib;
+
+use Exception;
+
+class TelegramOrgAPI
 {
     private $TELEGRAM_BOT_TOKEN;
 

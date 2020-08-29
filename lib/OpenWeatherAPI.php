@@ -1,8 +1,10 @@
 <?php
 
-define('OPENWEATHER_API_TOKEN', '********************************'); // Confidential information
+namespace lib;
 
-class Weather
+use Exception;
+
+class OpenWeatherAPI
 {
     public static function getWeather($city)
     {

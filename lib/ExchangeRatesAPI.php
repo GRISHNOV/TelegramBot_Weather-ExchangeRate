@@ -1,6 +1,10 @@
 <?php
 
-class ExchangeRates
+namespace lib;
+
+use Exception;
+
+class ExchangeRatesAPI
 {
     public static function getExchangeRates($currency)
     {

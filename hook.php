@@ -1,20 +1,21 @@
 <?php
 
-/*  This script should be installed as a webhook handler for telegram servers   */
+/*  This script should be installed as a webhook handler for api.telegram.org  */
 
 error_reporting(E_ALL);
 
-require_once "lib/telegramMethodsAPI.php";
-require_once "lib/exchangeRatesLib.php";
-require_once "lib/weatherLib.php";
-require_once "lib/auxiliaryModule.php";
-require_once "config/config.php";
+spl_autoload_register(function (string $className) {
+    require_once __DIR__ . '/' . str_replace('\\', '/', $className) . '.php';
+});
 
-if (TELEGRAM_API_BOT_TOKEN == '**********************************************') {
-    echo "System failure, no token specified for telegram API!";
-    trigger_error("System failure, no token specified for telegram API!", E_USER_ERROR);
-    exit("System failure, no token specified for telegram API!");
-}
+use lib\KeyBoards;
+use lib\ParserProcessor;
+use lib\ConfigurationManager;
+use lib\TelegramOrgAPI;
+use lib\ExchangeRatesAPI;
+use lib\OpenWeatherAPI;
+
+$configurationManagerHandler = new ConfigurationManager();
 
 $telegram_server_input_request = file_get_contents('php://input');
 $client_data = json_decode($telegram_server_input_request, true);
@@ -24,7 +25,7 @@ if (empty($client_data['message']['chat']['id'])) {
     exit();
 }
 
-$BotInterface = new TelegramBotNetInterfaceAPI(TELEGRAM_API_BOT_TOKEN);
+$BotInterface = new TelegramOrgAPI(TELEGRAM_API_BOT_TOKEN);
 
 $weatherKeyboard = KeyBoards::getKeyBoard([[["text" => "Weather in Moscow"], ["text" => "Weather in London"],
     ["text" => "Weather in New York"], ["text" => "Weather in Tokyo"]]]);
@@ -73,7 +74,7 @@ if (!empty($client_data['message']['text'])) {
     switch ($switcher_flag) {
 
         case "USD_EXCHANGE_RATE":
-            $USD_data = ExchangeRates::getExchangeRates("USD");
+            $USD_data = ExchangeRatesAPI::getExchangeRates("USD");
             if ($USD_data == "API_REQUEST_FAILURE") {
                 $BotInterface->sendTelegram(
                     'sendMessage',
@@ -101,7 +102,7 @@ if (!empty($client_data['message']['text'])) {
             break;
 
         case "EUR_EXCHANGE_RATE":
-            $EUR_data = ExchangeRates::getExchangeRates("EUR");
+            $EUR_data = ExchangeRatesAPI::getExchangeRates("EUR");
             if ($EUR_data == "API_REQUEST_FAILURE") {
                 $BotInterface->sendTelegram(
                     'sendMessage',
@@ -141,7 +142,7 @@ if (!empty($client_data['message']['text'])) {
             break;
 
         case "MOSCOW_WEATHER":
-            $weather_data = Weather::getWeather("Moscow");
+            $weather_data = OpenWeatherAPI::getWeather("Moscow");
             if ($weather_data == "API_REQUEST_FAILURE") {
                 $BotInterface->sendTelegram(
                     'sendMessage',
@@ -173,7 +174,7 @@ if (!empty($client_data['message']['text'])) {
             break;
 
         case "LONDON_WEATHER":
-            $weather_data = Weather::getWeather("London");
+            $weather_data = OpenWeatherAPI::getWeather("London");
             if ($weather_data == "API_REQUEST_FAILURE") {
                 $BotInterface->sendTelegram(
                     'sendMessage',
@@ -205,7 +206,7 @@ if (!empty($client_data['message']['text'])) {
             break;
 
         case "NEWYORK_WEATHER":
-            $weather_data = Weather::getWeather("New York");
+            $weather_data = OpenWeatherAPI::getWeather("New York");
             if ($weather_data == "API_REQUEST_FAILURE") {
                 $BotInterface->sendTelegram(
                     'sendMessage',
@@ -237,7 +238,7 @@ if (!empty($client_data['message']['text'])) {
             break;
 
         case "TOKYO_WEATHER":
-            $weather_data = Weather::getWeather("Tokyo");
+            $weather_data = OpenWeatherAPI::getWeather("Tokyo");
             if ($weather_data == "API_REQUEST_FAILURE") {
                 $BotInterface->sendTelegram(
                     'sendMessage',
