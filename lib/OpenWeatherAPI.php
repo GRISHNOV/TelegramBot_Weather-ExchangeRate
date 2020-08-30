@@ -8,11 +8,6 @@ class OpenWeatherAPI
 {
     public static function getWeather($city)
     {
-        if (OPENWEATHER_API_TOKEN == '********************************') {
-            echo "System failure, no token specified for OpenWeather!";
-            trigger_error("System failure, no token specified for OpenWeather!", E_USER_ERROR);
-            exit("System failure, no token specified for OpenWeather!");
-        }
         $request_url = "http://api.openweathermap.org/data/2.5/weather?q=" . $city . "&appid=" .
             OPENWEATHER_API_TOKEN . "&units=metric";
         try {
