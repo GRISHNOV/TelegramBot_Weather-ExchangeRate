@@ -15,7 +15,20 @@ This telegram bot allows you to find out exchange rate and weather
 ## Configuration and deployment
 You can set database connection settings and token API values in file ```config/config.php```
 
+```php
+
+define('TELEGRAM_API_BOT_TOKEN', NULL);
+define('OPENWEATHER_API_TOKEN', NULL);
+define('MYSQL_DB_HOST', NULL);
+define('MYSQL_DB_USER', NULL);
+define('MYSQL_DB_PASSWORD', NULL);
+define('MYSQL_MSG_LOGS_DB_NAME', NULL);
+
+```
+
 Script ```hook.php``` should be installed as a webhook handler for api.telegram.org
+
+For more information, see [this](https://core.telegram.org/bots/api#setwebhook) official documentation page
 
 ***
 
